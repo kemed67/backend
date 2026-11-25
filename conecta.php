@@ -1,7 +1,7 @@
 <?php
 $host = "sql307.infinityfree.com";
-$banco = "if0_43535284_meu_banco";   // seu nome completo
-$usuario = "if0_43535284";
+$banco = "if0_43535284_meu_banco";
+$usuario = "if0_43535284";         
 $senha = "gcFiHuD2dDV";
 
 try {
