@@ -1,25 +1,63 @@
 <?php
+session_start();
 include "conecta.php";
 
-$cpf = $_POST['cpf'];
-$senha = $_POST['senha'];
+$erro = "";
 
-$sql = "SELECT * FROM aluno WHERE cpf = :cpf AND senha = :senha";
+// Só processa o login se o formulário foi enviado
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-try {
-    $stmt = $conexao->prepare($sql);
-    $stmt->bindParam(':cpf', $cpf);
-    $stmt->bindParam(':senha', $senha);
-    $stmt->execute();
+    $cpf = $_POST['cpf'] ?? '';
+    $senha = $_POST['senha'] ?? '';
 
-    if ($linha = $stmt->fetch()) {
-        echo "<h2 style='color: green;'>Login bem-sucedido!</h2>";
-        echo "<p>Bem-vindo(a), " . htmlspecialchars($linha['nome']) . "!</p>";
-    } else {
-        echo "<h2 style='color: red;'>CPF ou senha incorretos.</h2>";
-        echo "<p><a href='index.php'>Tentar novamente</a></p>";
+    $sql = "SELECT * FROM aluno WHERE cpf = :cpf AND senha = :senha";
+
+    try {
+        $stmt = $conexao->prepare($sql);
+        $stmt->bindParam(':cpf', $cpf);
+        $stmt->bindParam(':senha', $senha);
+        $stmt->execute();
+
+        if ($linha = $stmt->fetch()) {
+            // Login correto - salva na sessão e redireciona
+            $_SESSION['aluno'] = $linha; // ou $_SESSION['nome'] = $linha['nome'];
+            
+            header("Location: lista.php"); // página depois do login
+            exit;
+        } else {
+            $erro = "CPF ou senha incorretos.";
+        }
+    } catch (PDOException $e) {
+        $erro = "Erro ao executar consulta: " . $e->getMessage();
     }
-} catch (PDOException $e) {
-    echo "Erro ao executar consulta: " . $e->getMessage();
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+
+    <h2>Login do Aluno</h2>
+
+    <?php if (!empty($erro)): ?>
+        <p style="color: red;"><?php echo $erro; ?></p>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+        <label>CPF:</label><br>
+        <input type="text" name="cpf" required><br><br>
+
+        <label>Senha:</label><br>
+        <input type="password" name="senha" required><br><br>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p><a href="index.php">Voltar</a></p>
+
+</body>
+</html>
