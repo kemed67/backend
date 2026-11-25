@@ -5,6 +5,6 @@
   <title>Site</title>
 </head>
 <body>
-    <?php echo "<h1>Olá, mundo!</h1>" ?>
+    <?php echo "<h1>Site aurudo 6767</h1>" ?>
 </body>
 </html>
